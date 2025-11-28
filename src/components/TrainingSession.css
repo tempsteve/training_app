@@ -1,0 +1,177 @@
+.training-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+}
+
+.training-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.training-header h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.progress-info {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.training-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.exercise-period,
+.rest-period {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: #333;
+}
+
+.exercise-info {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.exercise-name {
+  font-size: 2rem;
+  color: #667eea;
+  margin-bottom: 15px;
+}
+
+.set-info {
+  font-size: 1.3rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.reps-info {
+  font-size: 1.1rem;
+  color: #888;
+}
+
+.timer-display {
+  text-align: center;
+  margin: 30px 0;
+  padding: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  color: white;
+}
+
+.timer-label {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.timer-value {
+  font-size: 3.5rem;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.rest-timer {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.weight-input-section {
+  margin: 30px 0;
+  text-align: center;
+}
+
+.weight-input-section label {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #555;
+  font-weight: 600;
+}
+
+.weight-input {
+  width: 100%;
+  max-width: 300px;
+  padding: 15px;
+  font-size: 1.5rem;
+  text-align: center;
+  border: 3px solid #667eea;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.rest-info {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.rest-info h2 {
+  font-size: 2rem;
+  color: #f5576c;
+  margin-bottom: 15px;
+}
+
+.next-exercise-info {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.action-buttons .btn {
+  flex: 1;
+  padding: 20px;
+  font-size: 1.2rem;
+  border-radius: 12px;
+}
+
+.end-training-section {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.end-training-section .btn {
+  width: 100%;
+  max-width: 400px;
+  padding: 15px;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .training-container {
+    padding: 15px;
+  }
+  
+  .exercise-period,
+  .rest-period {
+    padding: 20px;
+  }
+  
+  .exercise-name {
+    font-size: 1.5rem;
+  }
+  
+  .timer-value {
+    font-size: 2.5rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .weight-input {
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,78 @@
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.workout-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.workout-header h2 {
+  font-size: 1.5rem;
+  color: #333;
+  flex: 1;
+  min-width: 200px;
+}
+
+.workout-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.workout-exercises {
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.workout-exercises h3 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.workout-exercises ul {
+  list-style: none;
+  padding: 0;
+}
+
+.workout-exercises li {
+  padding: 8px 0;
+  color: #666;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.workout-exercises li:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .workout-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .workout-actions {
+    width: 100%;
+  }
+  
+  .workout-actions .btn {
+    flex: 1;
+    min-width: 80px;
+  }
+}

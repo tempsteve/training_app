@@ -338,7 +338,8 @@ function TrainingSession() {
                   −
                 </button>
                 <input
-                  type="text"
+                  type="number"
+                  inputMode="decimal"
                   value={currentWeight}
                   onChange={(e) => setCurrentWeight(e.target.value)}
                   placeholder={currentExercise.startingWeight || `輸入${unit === '次' ? '次數' : unit}`}

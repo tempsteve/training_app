@@ -36,6 +36,15 @@
   gap: 20px;
 }
 
+/* Fix for dropdown overlapping subsequent inputs - decreasing z-index */
+.exercise-form .form-row .form-group {
+  position: relative;
+}
+.exercise-form .form-row .form-group:nth-child(1) { z-index: 4; }
+.exercise-form .form-row .form-group:nth-child(2) { z-index: 3; }
+.exercise-form .form-row .form-group:nth-child(3) { z-index: 2; }
+.exercise-form .form-row .form-group:nth-child(4) { z-index: 1; }
+
 .exercises-section {
   margin-top: 40px;
   padding-top: 30px;
@@ -109,7 +118,7 @@
   border-top: 1px solid var(--border-light); /* 使用變數 */
 }
 
-/* 單位選擇器組 */
+/* 單位選擇器組與輸入框群組 */
 .input-group {
   display: flex;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -118,6 +127,7 @@
   background: var(--input-bg); /* 使用變數 */
   position: relative; /* 為了 z-index */
   z-index: 10;
+  align-items: stretch; /* 確保高度一致 */
 }
 
 .input-group .form-input {
@@ -125,11 +135,75 @@
   box-shadow: none;
   background: transparent;
   flex: 1;
+  text-align: center; /* 讓數字居中 */
+  /* Remove number arrows (spinner) */
+  -moz-appearance: textfield;
+}
+.input-group .form-input::-webkit-outer-spin-button,
+.input-group .form-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .input-group-append {
   display: flex;
 }
+
+/* Control Buttons (+/-) */
+.btn-control {
+  background: var(--btn-bg-secondary);
+  border: none;
+  border-left: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+  color: var(--text-main);
+  font-weight: bold;
+  font-size: 1.2rem;
+  width: 44px; /* Touch target size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+  flex-shrink: 0;
+  z-index: 2; /* Ensure clickable */
+}
+
+.btn-control:hover {
+  background-color: var(--active-bg);
+}
+
+.btn-control:active {
+  background-color: var(--border-light);
+}
+
+/* Button positioning */
+.btn-control:first-child {
+  border-left: none;
+  border-right: 1px solid var(--border-light);
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+/* Middle buttons (if any, e.g. before unit selector) */
+.btn-control:not(:first-child):not(:last-child) {
+  /* Default styles apply */
+}
+
+/* Last child button */
+.btn-control:last-child {
+  border-right: none;
+  border-left: 1px solid var(--border-light);
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+/* If the last child is NOT a button (e.g. unit selector), the button before it needs border fix */
+.btn-control:nth-last-child(2) {
+  /* Handle case where button is before a unit selector div */
+  border-right: 1px solid var(--border-light); 
+}
+
 
 /* 自定義選擇器在 Input Group 中的適配 */
 .unit-selector .custom-select-trigger {
@@ -137,11 +211,22 @@
   border: none;
   border-radius: 0;
   border-left: 1px solid var(--border-light); /* 使用變數 */
-  padding: 16px;
+  padding: 0 16px; /* Reduced padding since height is managed by flex */
   height: 100%; /* 確保填滿 */
   box-shadow: none;
   color: var(--text-input);
+  display: flex;
+  align-items: center;
 }
+.unit-selector .custom-select-trigger:first-child {
+  border-left: 1px solid var(--border-light);
+}
+/* Fix for unit selector at the end */
+.input-group-append .unit-selector .custom-select-trigger {
+   border-top-right-radius: var(--radius-md);
+   border-bottom-right-radius: var(--radius-md);
+}
+
 
 .unit-selector .custom-select-trigger:hover {
   background: var(--active-bg); /* 使用變數 */
@@ -171,6 +256,8 @@
   color: var(--text-secondary);
   font-weight: 500;
   min-width: 60px;
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
 }
 
 @media (max-width: 768px) {
@@ -198,6 +285,6 @@
   }
   
   .input-group .form-input {
-      min-width: 60%;
+      min-width: 0; /* Allow shrinking */
   }
 }

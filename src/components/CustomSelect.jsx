@@ -8,6 +8,8 @@ const CustomSelect = ({ value, onChange, options, placeholder, className = '', l
   // 找到當前選中的選項物件
   const selectedOption = options.find(opt => opt.value === value);
 
+  const optionsRef = useRef(null);
+
   // 點擊外部關閉選單
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -21,6 +23,17 @@ const CustomSelect = ({ value, onChange, options, placeholder, className = '', l
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // 當選單打開時，滾動到選中的項目
+  useEffect(() => {
+    if (isOpen && value && optionsRef.current) {
+      const selectedElement = optionsRef.current.querySelector('.selected');
+      if (selectedElement) {
+        // 使用 scrollIntoView 並置中
+        selectedElement.scrollIntoView({ block: 'center' });
+      }
+    }
+  }, [isOpen, value]);
 
   const handleSelect = (optionValue) => {
     onChange(optionValue);
@@ -45,7 +58,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, className = '', l
       </div>
       
       {isOpen && (
-        <div className="custom-select-options">
+        <div className="custom-select-options" ref={optionsRef}>
           {options.map((option) => (
             <div
               key={option.value}

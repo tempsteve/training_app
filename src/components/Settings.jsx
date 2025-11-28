@@ -24,8 +24,15 @@ function Settings() {
   }, [])
 
   const handleChange = (field, value) => {
-    setSettings(prev => ({ ...prev, [field]: value }))
+    const newSettings = { ...settings, [field]: value }
+    setSettings(newSettings)
     setSaveStatus('') // Clear status on change
+
+    // 如果是更改主題，立即套用
+    if (field === 'theme') {
+      saveUserSettings(newSettings)
+      window.dispatchEvent(new Event('theme-change'))
+    }
   }
 
   const handleSave = () => {
@@ -102,6 +109,7 @@ function Settings() {
               <label>身高 (cm)</label>
               <input
                 type="number"
+                inputMode="decimal"
                 value={settings.height}
                 onChange={(e) => handleChange('height', e.target.value)}
                 placeholder="例如：175"
@@ -113,6 +121,7 @@ function Settings() {
               <label>體重 ({settings.weightUnit})</label>
               <input
                 type="number"
+                inputMode="decimal"
                 value={settings.weight}
                 onChange={(e) => handleChange('weight', e.target.value)}
                 placeholder="例如：70"

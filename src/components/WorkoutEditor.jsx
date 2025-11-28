@@ -53,6 +53,32 @@ function WorkoutEditor() {
     setWorkout({ ...workout, exercises: updated })
   }
 
+  const handleExerciseInput = (index, field, value) => {
+    // 允許空值，方便使用者刪除輸入
+    if (value === '') {
+      updateExercise(index, field, '')
+      return
+    }
+
+    const num = parseFloat(value)
+    if (!isNaN(num)) {
+      updateExercise(index, field, num)
+    }
+  }
+
+  const handleRestTimeInput = (index, value, unit) => {
+    // 允許空值
+    if (value === '') {
+      // 保持單位，但數值為空字串，我們需要一個特殊的表示方式或者直接存空字串
+      // 但因為 restTime 格式是 "數值+單位"，如果數值為空，會變成 "單位" (如 "秒")
+      // 這裡我們暫時存成只剩單位，解析時要小心
+      updateExercise(index, 'restTime', unit) 
+      return
+    }
+    
+    updateExercise(index, 'restTime', `${value}${unit}`)
+  }
+
   const removeExercise = (index) => {
     const updated = workout.exercises.filter((_, i) => i !== index)
     setWorkout({ ...workout, exercises: updated })
@@ -107,6 +133,36 @@ function WorkoutEditor() {
     }
     
     return { value, unit }
+  }
+
+  const handleIncrement = (index, field, currentValue, step = 1) => {
+    let num = parseFloat(currentValue) || 0
+    // For sets/reps, ensure integer
+    if (field === 'sets' || field === 'reps') {
+      num = parseInt(currentValue) || 0
+    }
+    
+    // 如果當前是空值或0，且要減少，不處理或設為最小
+    if ((!currentValue || num === 0) && step < 0) {
+      // 保持0或空值，或者設為最小值
+      num = 0
+    }
+    
+    const newVal = num + step
+    
+    // Min constraints
+    let min = 0
+    if (field === 'sets' || field === 'reps') min = 1
+    
+    updateExercise(index, field, Math.max(min, newVal))
+  }
+
+  const handleRestTimeIncrement = (index, currentRestTimeStr, direction) => {
+    const { value, unit } = parseRestTimeValue(currentRestTimeStr)
+    const num = parseFloat(value) || 0
+    const step = unit === '分' ? 1 : 5
+    const newVal = Math.max(0, num + (step * direction))
+    updateExercise(index, 'restTime', `${newVal}${unit}`)
   }
 
   return (
@@ -172,41 +228,69 @@ function WorkoutEditor() {
                   <div className="form-row">
                     <div className="form-group">
                       <label>組數</label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={exercise.sets}
-                        onChange={(e) => updateExercise(index, 'sets', parseInt(e.target.value) || 1)}
-                        className="form-input"
-                      />
+                      <div className="input-group">
+                        <button 
+                          className="btn-control"
+                          onClick={() => handleIncrement(index, 'sets', exercise.sets, -1)}
+                        >−</button>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          min="1"
+                          value={exercise.sets}
+                          onChange={(e) => handleExerciseInput(index, 'sets', e.target.value)}
+                          className="form-input"
+                        />
+                        <button 
+                          className="btn-control"
+                          onClick={() => handleIncrement(index, 'sets', exercise.sets, 1)}
+                        >+</button>
+                      </div>
                     </div>
 
                     <div className="form-group">
                       <label>次數</label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={exercise.reps}
-                        onChange={(e) => updateExercise(index, 'reps', parseInt(e.target.value) || 1)}
-                        className="form-input"
-                      />
+                      <div className="input-group">
+                        <button 
+                          className="btn-control"
+                          onClick={() => handleIncrement(index, 'reps', exercise.reps, -1)}
+                        >−</button>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          min="1"
+                          value={exercise.reps}
+                          onChange={(e) => handleExerciseInput(index, 'reps', e.target.value)}
+                          className="form-input"
+                        />
+                        <button 
+                          className="btn-control"
+                          onClick={() => handleIncrement(index, 'reps', exercise.reps, 1)}
+                        >+</button>
+                      </div>
                     </div>
 
                     <div className="form-group">
                       <label>休息時間</label>
                       <div className="input-group">
+                        <button 
+                          className="btn-control"
+                          onClick={() => handleRestTimeIncrement(index, exercise.restTime, -1)}
+                        >−</button>
                         <input
                           type="number"
+                          inputMode="numeric"
                           min="0"
                           step="1"
                           value={restValue}
-                          onChange={(e) => {
-                            const val = e.target.value
-                            updateExercise(index, 'restTime', val ? `${val}${restUnit}` : `0${restUnit}`)
-                          }}
+                          onChange={(e) => handleRestTimeInput(index, e.target.value, restUnit)}
                           placeholder="30"
                           className="form-input"
                         />
+                        <button 
+                          className="btn-control"
+                          onClick={() => handleRestTimeIncrement(index, exercise.restTime, 1)}
+                        >+</button>
                         <div className="input-group-append" style={{ width: '90px' }}>
                           <CustomSelect
                             value={restUnit}
@@ -226,13 +310,22 @@ function WorkoutEditor() {
                     <div className="form-group">
                       <label>起始重量</label>
                       <div className="input-group">
+                        <button 
+                          className="btn-control"
+                          onClick={() => handleIncrement(index, 'startingWeight', exercise.startingWeight, -1)}
+                        >−</button>
                         <input
-                          type="text"
+                          type="number"
+                          inputMode="decimal"
                           value={exercise.startingWeight || ''}
                           onChange={(e) => updateExercise(index, 'startingWeight', e.target.value)}
                           placeholder="例如：20"
                           className="form-input"
                         />
+                        <button 
+                          className="btn-control"
+                          onClick={() => handleIncrement(index, 'startingWeight', exercise.startingWeight, 1)}
+                        >+</button>
                         <div className="form-addon-unit">
                           {userSettings.weightUnit}
                         </div>

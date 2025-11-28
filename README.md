@@ -79,6 +79,34 @@ npm run build
 npm run preview
 ```
 
+## 部署到 GitHub Pages
+
+專案已配置好 GitHub Pages 自動部署。
+
+### 首次設置
+
+1. 在 GitHub repository 設定中啟用 Pages：
+   - 前往 Settings → Pages
+   - Source 選擇 "GitHub Actions"
+
+2. 更新 base path（如果 repository 名稱不是 `username.github.io`）：
+   - 編輯 `.github/workflows/deploy.yml`
+   - 將 `VITE_BASE_PATH: /training_app/` 改為你的 repository 名稱
+   - 例如：如果 repository 是 `my-training-app`，改為 `VITE_BASE_PATH: /my-training-app/`
+   - 如果 repository 名稱是 `username.github.io`，改為 `VITE_BASE_PATH: /`
+
+3. 推送代碼到 main 分支，GitHub Actions 會自動建置並部署
+
+### 自動部署
+
+每次推送到 `main` 分支時，GitHub Actions 會自動：
+- 建置專案
+- 部署到 GitHub Pages
+
+部署完成後，你的應用會出現在：
+- `https://username.github.io/repository-name/`（如果 repository 不是 `username.github.io`）
+- `https://username.github.io/`（如果 repository 是 `username.github.io`）
+
 ## 專案結構
 
 ```

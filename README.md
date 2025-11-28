@@ -1,23 +1,40 @@
-# 運動訓練助手
+# 運動訓練助手 (Workout Assistant)
 
-一個專注於運動訓練輔助的多平台React應用程式。
+一個專注於運動訓練輔助的多平台 React 應用程式，幫助你建立、執行並記錄每一次的訓練。
 
-## 功能特色
+## ✨ 功能特色
 
-- 📋 **課表管理**：建立和管理你的訓練課表，自定義動作、組數、次數和休息時間
-- 🏋️ **訓練執行**：從課表逐個進行訓練，記錄每次的重量或強度
-- ⏱️ **智能計時**：運動時從0開始計時，休息時自動倒數計時
-- 📊 **訓練記錄**：自動記錄每次訓練的詳細數據和結果
-- 📱 **響應式設計**：完美適配手機和桌面設備
+### 📋 課表管理與執行
+- **自定義課表**：建立多個訓練課表，自由安排動作、組數、次數與休息時間。
+- **彈性單位**：休息時間支援「秒」或「分」輸入；系統會根據動作名稱自動判斷單位（如：深蹲顯示 kg、跑步顯示 km）。
+- **引導式訓練**：
+  - 專注於當前動作的介面設計。
+  - **智能計時**：運動時正向計時，休息時自動倒數。
+  - **項目間休息**：動作切換時自動提供較長的休息緩衝（預設 5 分鐘）。
+  - **即時調整**：訓練過程中可隨時修改重量/強度。
+  - **臨時動作**：訓練結束後若覺得不夠，可立即新增「臨時動作」繼續訓練。
 
-## 技術棧
+### ⚙️ 個人化設定
+- **主題切換**：支援 **深色 (Dark Mode)**、淺色與跟隨系統主題。
+- **單位偏好**：可選擇 **公制 (kg/cm)** 或 **英制 (lbs/ft)**。
+- **音效提示**：休息時間結束前 3 秒播放提示音（可於設定中開關）。
+- **個人資料**：設定身高、體重、性別等基礎數據。
 
-- React 18
-- React Router DOM
-- Vite
-- LocalStorage（本地數據存儲）
+### 📊 訓練總結
+- 訓練結束後即時顯示統計數據（總時間、運動時間、完成動作數、總組數）。
+- 詳細記錄每個動作的每組表現（重量、時間）。
+- 數據自動保存於本地裝置。
 
-## 安裝
+## 🛠️ 技術棧
+
+- **Core**: React 18, Vite
+- **Routing**: React Router DOM (支援 GitHub Pages)
+- **State/Storage**: LocalStorage (本地數據持久化)
+- **Styling**: CSS Variables (Theme support), Responsive Design
+
+## 🚀 快速開始
+
+### 安裝與執行
 
 1. 安裝依賴：
 ```bash
@@ -31,99 +48,65 @@ npm run dev
 
 3. 在瀏覽器中打開顯示的網址（通常是 `http://localhost:5173`）
 
-## 使用方式
+### 建置與部署
 
-### 建立課表
-
-1. 點擊「建立新課表」
-2. 輸入課表名稱
-3. 添加動作，設定：
-   - 動作名稱（例如：深蹲、臥推、跑步）
-   - 組數
-   - 次數
-   - 休息時間（例如：30秒、2分鐘、1分30秒）
-
-### 開始訓練
-
-1. 在課表列表中選擇要執行的課表
-2. 點擊「開始訓練」
-3. 在運動period：
-   - 輸入本次的重量/強度（根據動作自動判斷單位）
-   - 點擊「休息」進入休息period
-   - 完成後點擊「完成這一組」
-4. 在休息period：
-   - 系統會自動倒數計時
-   - 可以提前結束休息
-5. 完成所有動作後，查看訓練總結
-
-### 量詞自動判斷
-
-系統會根據動作名稱自動判斷量詞：
-- 重量訓練（深蹲、臥推等）→ kg
-- 跑步相關 → km
-- 腳踏車相關 → km/h
-- 平板支撐等 → 秒
-- 其他 → 次
-
-## 開發
-
-### 建置生產版本
-
+**建置生產版本：**
 ```bash
 npm run build
 ```
 
-### 預覽生產版本
-
+**預覽生產版本：**
 ```bash
 npm run preview
 ```
 
-## 部署到 GitHub Pages
+## 📖 使用指南
 
-專案已配置好 GitHub Pages 自動部署。
+### 1. 建立課表
+1. 點擊首頁或列表頁的「建立新課表」。
+2. 設定課表名稱。
+3. 添加動作：
+   - 設定名稱（如：臥推）。
+   - 設定目標組數與次數。
+   - 設定休息時間（支援輸入「90秒」或「1.5分」）。
+   - 設定起始重量（選填）。
 
-### 首次設置
+### 2. 開始訓練
+1. 選擇課表並點擊「開始訓練」。
+2. **運動階段**：
+   - 輸入實際重量（預設帶入起始重量）。
+   - 點擊「休息」進入倒數。
+3. **休息階段**：
+   - 倒數計時，最後 3 秒有音效提示。
+   - 可隨時「提前結束休息」。
+4. **結束/加練**：
+   - 完成所有動作後，可選擇「結束訓練」查看總結，或「新增臨時動作」繼續加練。
 
-1. 在 GitHub repository 設定中啟用 Pages：
-   - 前往 Settings → Pages
-   - Source 選擇 "GitHub Actions"
+### 3. 設定
+- 進入首頁的「設定」頁面。
+- 調整外觀主題（深/淺色）。
+- 切換重量單位（kg/lbs）。
+- 開啟/關閉倒數音效。
 
-2. 更新 base path（如果 repository 名稱不是 `username.github.io`）：
-   - 編輯 `.github/workflows/deploy.yml`
-   - 將 `VITE_BASE_PATH: /training_app/` 改為你的 repository 名稱
-   - 例如：如果 repository 是 `my-training-app`，改為 `VITE_BASE_PATH: /my-training-app/`
-   - 如果 repository 名稱是 `username.github.io`，改為 `VITE_BASE_PATH: /`
-
-3. 推送代碼到 main 分支，GitHub Actions 會自動建置並部署
-
-### 自動部署
-
-每次推送到 `main` 分支時，GitHub Actions 會自動：
-- 建置專案
-- 部署到 GitHub Pages
-
-部署完成後，你的應用會出現在：
-- `https://username.github.io/repository-name/`（如果 repository 不是 `username.github.io`）
-- `https://username.github.io/`（如果 repository 是 `username.github.io`）
-
-## 專案結構
+## 📂 專案結構
 
 ```
 src/
-├── components/          # React組件
-│   ├── WorkoutList.jsx  # 課表列表
-│   ├── WorkoutEditor.jsx # 課表編輯器
-│   ├── TrainingSession.jsx # 訓練執行
-│   └── TrainingSummary.jsx # 訓練總結
+├── components/          # React 組件
+│   ├── WorkoutList.jsx    # 課表列表
+│   ├── WorkoutEditor.jsx  # 課表編輯器
+│   ├── TrainingSession.jsx # 訓練執行核心
+│   ├── TrainingSummary.jsx # 訓練總結頁
+│   ├── Settings.jsx       # 設定頁面
+│   └── ...
 ├── utils/               # 工具函數
-│   ├── storage.js       # 本地存儲
-│   ├── time.js          # 時間格式化
-│   └── units.js         # 量詞判斷
-├── App.jsx              # 主應用和路由
+│   ├── storage.js       # LocalStorage 管理
+│   ├── time.js          # 時間格式化邏輯
+│   └── units.js         # 單位判斷邏輯
+├── App.jsx              # 主路由配置
 └── main.jsx             # 入口文件
 ```
 
-## 授權
+## 📄 授權
 
 MIT License

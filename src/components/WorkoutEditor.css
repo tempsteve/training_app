@@ -1,115 +1,203 @@
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-weight: 600;
-  color: #555;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  margin-left: 4px;
 }
 
 .form-input {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid transparent; /* 預設無邊框 */
+  background: var(--input-bg); /* 使用變數 */
+  border-radius: var(--radius-md);
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.2s ease;
+  color: var(--text-input); /* 使用變數 */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .form-input:focus {
-  border-color: #667eea;
+  background: var(--active-bg); /* 使用變數 */
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(0, 196, 179, 0.15);
+  color: var(--text-main);
 }
 
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
+  gap: 20px;
 }
 
 .exercises-section {
-  margin-top: 30px;
+  margin-top: 40px;
   padding-top: 30px;
-  border-top: 2px solid #eee;
+  border-top: 1px solid var(--border-light); /* 使用變數 */
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .section-header h2 {
-  font-size: 1.3rem;
-  color: #333;
+  font-size: 1.4rem;
+  color: var(--text-main);
+  font-weight: 700;
 }
 
 .exercise-item {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  border: 2px solid #e9ecef;
+  background: var(--card-inner-bg); /* 使用變數 */
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border-light); /* 使用變數 */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
 .exercise-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-light); /* 使用變數 */
 }
 
 .exercise-header h3 {
-  font-size: 1.1rem;
-  color: #667eea;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 .btn-small {
-  padding: 8px 15px;
+  padding: 8px 16px;
   font-size: 0.9rem;
+  border-radius: 20px;
 }
 
 .exercise-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
 .empty-exercises {
   text-align: center;
-  padding: 40px;
-  color: #999;
-  background: #f8f9fa;
-  border-radius: 12px;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  background: var(--card-inner-bg); /* 使用變數 */
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-light); /* 使用變數 */
 }
 
 .form-actions {
   display: flex;
-  gap: 15px;
+  gap: 16px;
   justify-content: flex-end;
-  margin-top: 30px;
+  margin-top: 40px;
   padding-top: 30px;
-  border-top: 2px solid #eee;
+  border-top: 1px solid var(--border-light); /* 使用變數 */
+}
+
+/* 單位選擇器組 */
+.input-group {
+  display: flex;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-md);
+  overflow: visible; /* 改為 visible 讓下拉選單不被切掉 */
+  background: var(--input-bg); /* 使用變數 */
+  position: relative; /* 為了 z-index */
+  z-index: 10;
+}
+
+.input-group .form-input {
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  flex: 1;
+}
+
+.input-group-append {
+  display: flex;
+}
+
+/* 自定義選擇器在 Input Group 中的適配 */
+.unit-selector .custom-select-trigger {
+  background: var(--glass-bg); /* 使用變數，或者比 input 稍微亮一點/暗一點 */
+  border: none;
+  border-radius: 0;
+  border-left: 1px solid var(--border-light); /* 使用變數 */
+  padding: 16px;
+  height: 100%; /* 確保填滿 */
+  box-shadow: none;
+  color: var(--text-input);
+}
+
+.unit-selector .custom-select-trigger:hover {
+  background: var(--active-bg); /* 使用變數 */
+}
+
+.unit-selector .custom-select-trigger.open {
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--active-bg); /* 使用變數 */
+}
+
+/* 確保下拉選單位置正確 */
+.unit-selector .custom-select-options {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-top: 1px;
+  min-width: 100%;
+}
+
+.form-addon-unit {
+  background-color: var(--btn-bg-secondary); /* 使用變數 */
+  border-left: 1px solid var(--border-light); /* 使用變數 */
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 60px;
 }
 
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
-  }
-  
-  .section-header {
-    flex-direction: column;
-    align-items: stretch;
     gap: 15px;
   }
   
+  .section-header {
+    flex-direction: row; /* 保持標題和按鈕並排 */
+    align-items: center;
+  }
+  
   .form-actions {
-    flex-direction: column;
+    flex-direction: column-reverse; /* 取消在下，保存（重要）在上 */
   }
   
   .form-actions .btn {
     width: 100%;
+    padding: 16px;
+  }
+  
+  .input-group {
+     flex-wrap: nowrap; /* 保持同一行 */
+  }
+  
+  .input-group .form-input {
+      min-width: 60%;
   }
 }

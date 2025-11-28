@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { loadWorkouts } from '../utils/storage'
+import { loadWorkouts, saveWorkouts, loadUserSettings } from '../utils/storage'
 import { parseRestTime, formatTime, formatRestTime } from '../utils/time'
 import { getUnitForExercise } from '../utils/units'
 import './TrainingSession.css'
 
 const PERIOD_TYPES = {
   EXERCISE: 'exercise',
-  REST: 'rest'
+  REST: 'rest',
+  EXERCISE_BREAK: 'exerciseBreak' // 項目間休息
 }
 
 function TrainingSession() {
@@ -21,12 +22,29 @@ function TrainingSession() {
   const [restTime, setRestTime] = useState(0)
   const [records, setRecords] = useState([])
   const [currentWeight, setCurrentWeight] = useState('')
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false)
+  const [showTempExerciseDialog, setShowTempExerciseDialog] = useState(false)
+  const [isLastExercise, setIsLastExercise] = useState(false) // 是否為最後一個項目
+  const [userSettings, setUserSettings] = useState({ weightUnit: 'kg' })
+  const [tempExercise, setTempExercise] = useState({
+    name: '',
+    sets: 3,
+    reps: 10,
+    restTime: '60秒',
+    startingWeight: ''
+  })
   
   const exerciseTimerRef = useRef(null)
   const restTimerRef = useRef(null)
   const startTimeRef = useRef(null)
+  const currentSetRef = useRef(1)
+  const currentExerciseIndexRef = useRef(0)
+  const workoutRef = useRef(null)
 
   useEffect(() => {
+    const settings = loadUserSettings()
+    setUserSettings(settings)
+
     const workouts = loadWorkouts()
     const found = workouts.find(w => w.id === id)
     if (!found) {
@@ -34,9 +52,19 @@ function TrainingSession() {
       return
     }
     setWorkout(found)
+    workoutRef.current = found
     startTimeRef.current = Date.now()
+    // 初始化第一個動作的起始重量
+    if (found.exercises.length > 0 && found.exercises[0].startingWeight) {
+      setCurrentWeight(found.exercises[0].startingWeight)
+    }
     startExerciseTimer()
   }, [id, navigate])
+
+  useEffect(() => {
+    currentSetRef.current = currentSet
+    currentExerciseIndexRef.current = currentExerciseIndex
+  }, [currentSet, currentExerciseIndex])
 
   useEffect(() => {
     if (period === PERIOD_TYPES.EXERCISE) {
@@ -68,14 +96,20 @@ function TrainingSession() {
     }
   }
 
-  const startRestTimer = (restSeconds) => {
+  const startRestTimer = (restSeconds, isExerciseBreak = false) => {
     stopRestTimer()
     setRestTime(restSeconds)
     restTimerRef.current = setInterval(() => {
       setRestTime(prev => {
         if (prev <= 1) {
           stopRestTimer()
-          setPeriod(PERIOD_TYPES.EXERCISE)
+          if (isExerciseBreak) {
+            // 項目間休息結束，等待用戶點擊「開始下一個項目」按鈕
+            // 不需要自動處理，因為用戶會手動點擊按鈕
+          } else {
+            // 組間休息結束，進入下一組
+            setPeriod(PERIOD_TYPES.EXERCISE)
+          }
           return 0
         }
         return prev - 1
@@ -94,16 +128,13 @@ function TrainingSession() {
     if (period !== PERIOD_TYPES.EXERCISE) return
     
     const currentExercise = workout.exercises[currentExerciseIndex]
-    const restSeconds = parseRestTime(currentExercise.restTime)
-    setPeriod(PERIOD_TYPES.REST)
-    startRestTimer(restSeconds)
-  }
-
-  const handleNextSet = () => {
-    if (period !== PERIOD_TYPES.EXERCISE) return
     
-    const currentExercise = workout.exercises[currentExerciseIndex]
-    const unit = getUnitForExercise(currentExercise.name)
+    // 判斷單位
+    let unitType = getUnitForExercise(currentExercise.name)
+    let unit = unitType
+    if (unitType === 'weight' || unitType === 'weight_or_reps') {
+      unit = userSettings.weightUnit
+    }
     
     // 記錄當前組的數據
     const record = {
@@ -116,18 +147,57 @@ function TrainingSession() {
     
     setRecords([...records, record])
     setExerciseTime(0)
-    setCurrentWeight('')
+
+    // 更新課表中的起始重量（如果使用者有修改）
+    if (currentWeight && currentWeight !== currentExercise.startingWeight) {
+      const updatedExercises = [...workout.exercises]
+      updatedExercises[currentExerciseIndex] = {
+        ...currentExercise,
+        startingWeight: currentWeight
+      }
+      
+      const updatedWorkout = { ...workout, exercises: updatedExercises }
+      setWorkout(updatedWorkout)
+      workoutRef.current = updatedWorkout
+      
+      // 保存到 localStorage
+      const allWorkouts = loadWorkouts()
+      const workoutIndex = allWorkouts.findIndex(w => w.id === id)
+      if (workoutIndex !== -1) {
+        allWorkouts[workoutIndex] = updatedWorkout
+        saveWorkouts(allWorkouts)
+      }
+    }
+    
+    // 檢查是否是最後一組
+    const isLastSet = currentSet >= currentExercise.sets
+    const isLastExerciseCheck = currentExerciseIndex === workout.exercises.length - 1
+    const isLastSetOfLastExercise = isLastSet && isLastExerciseCheck
+    
+    // 如果是最後一個項目的最後一組，直接顯示完成對話框
+    if (isLastSetOfLastExercise) {
+      setShowCompletionDialog(true)
+      return
+    }
     
     // 檢查是否還有下一組
-    if (currentSet < currentExercise.sets) {
+    if (!isLastSet) {
       setCurrentSet(currentSet + 1)
-      // 自動進入休息
+      // 下一組時，使用剛才更新過的 currentWeight (即為最新的 startingWeight)
+      // 不需要特別做什麼，因為 currentWeight 已經是新的值了
+    } else {
+      // 這是最後一組但不是最後一個項目，進入項目間休息（5分鐘）
+      setIsLastExercise(false)
+      setPeriod(PERIOD_TYPES.EXERCISE_BREAK)
+      const exerciseBreakSeconds = 5 * 60 // 5分鐘
+      startRestTimer(exerciseBreakSeconds, true)
+    }
+
+    if (!isLastSetOfLastExercise && !isLastSet) {
+      // 組間休息
       const restSeconds = parseRestTime(currentExercise.restTime)
       setPeriod(PERIOD_TYPES.REST)
-      startRestTimer(restSeconds)
-    } else {
-      // 這個動作完成了，進入下一個動作
-      handleNextExercise()
+      startRestTimer(restSeconds, false)
     }
   }
 
@@ -136,10 +206,14 @@ function TrainingSession() {
     setPeriod(PERIOD_TYPES.EXERCISE)
     
     if (currentExerciseIndex < workout.exercises.length - 1) {
-      setCurrentExerciseIndex(currentExerciseIndex + 1)
+      const nextIndex = currentExerciseIndex + 1
+      setCurrentExerciseIndex(nextIndex)
       setCurrentSet(1)
       setExerciseTime(0)
-      setCurrentWeight('')
+      setIsLastExercise(false)
+      // 設定下一個動作的起始重量
+      const nextExercise = workout.exercises[nextIndex]
+      setCurrentWeight(nextExercise.startingWeight || '')
     } else {
       // 所有動作都完成了
       handleEndTraining()
@@ -164,14 +238,60 @@ function TrainingSession() {
     navigate('/summary')
   }
 
+  const handleAddTempExercise = () => {
+    if (!tempExercise.name.trim()) {
+      alert('請輸入動作名稱')
+      return
+    }
+
+    const newExercise = {
+      ...tempExercise,
+      startingWeight: tempExercise.startingWeight
+    }
+
+    const updatedWorkout = {
+      ...workout,
+      exercises: [...workout.exercises, newExercise]
+    }
+
+    setWorkout(updatedWorkout)
+    workoutRef.current = updatedWorkout
+    
+    // 不更新 localStorage，因為是臨時動作
+    
+    setShowTempExerciseDialog(false)
+    setShowCompletionDialog(false)
+    
+    // 進入下一個動作（即剛新增的動作）
+    // 這裡需要手動觸發類似 handleNextExercise 的邏輯，但因為我們已經在對話框狀態，
+    // 直接更新索引和重置狀態即可
+    
+    const nextIndex = workout.exercises.length // 原本長度即為新動作索引
+    setCurrentExerciseIndex(nextIndex)
+    setCurrentSet(1)
+    setExerciseTime(0)
+    setCurrentWeight(newExercise.startingWeight || '')
+    setIsLastExercise(false)
+    setPeriod(PERIOD_TYPES.EXERCISE)
+    startExerciseTimer()
+  }
+
   if (!workout) {
     return <div>載入中...</div>
   }
 
   const currentExercise = workout.exercises[currentExerciseIndex]
-  const unit = getUnitForExercise(currentExercise.name)
-  const isLastSet = currentSet === currentExercise.sets
-  const isLastExercise = currentExerciseIndex === workout.exercises.length - 1
+  
+  // 計算顯示單位
+  let unitType = getUnitForExercise(currentExercise.name)
+  let unit = unitType
+  if (unitType === 'weight' || unitType === 'weight_or_reps') {
+    unit = userSettings.weightUnit
+  } else if (unitType === 'km' || unitType === 'km/h' || unitType === '秒') {
+    // 保持原樣
+  } else {
+    unit = '次' // 預設
+  }
 
   return (
     <div className="training-container">
@@ -202,13 +322,38 @@ function TrainingSession() {
 
             <div className="weight-input-section">
               <label>本次重量/強度 ({unit})</label>
-              <input
-                type="text"
-                value={currentWeight}
-                onChange={(e) => setCurrentWeight(e.target.value)}
-                placeholder={`輸入${unit === '次' ? '次數' : unit}`}
-                className="weight-input"
-              />
+              {currentExercise.startingWeight && (
+                <div className="starting-weight-hint">
+                  課表起始重量：{currentExercise.startingWeight} {unit}
+                </div>
+              )}
+              <div className="weight-input-wrapper">
+                <button
+                  className="weight-btn weight-btn-decrease"
+                  onClick={() => {
+                    const num = parseFloat(currentWeight) || parseFloat(currentExercise.startingWeight) || 0
+                    setCurrentWeight(Math.max(0, num - 1).toString())
+                  }}
+                >
+                  −
+                </button>
+                <input
+                  type="text"
+                  value={currentWeight}
+                  onChange={(e) => setCurrentWeight(e.target.value)}
+                  placeholder={currentExercise.startingWeight || `輸入${unit === '次' ? '次數' : unit}`}
+                  className="weight-input"
+                />
+                <button
+                  className="weight-btn weight-btn-increase"
+                  onClick={() => {
+                    const num = parseFloat(currentWeight) || parseFloat(currentExercise.startingWeight) || 0
+                    setCurrentWeight((num + 1).toString())
+                  }}
+                >
+                  +
+                </button>
+              </div>
             </div>
 
             <div className="action-buttons">
@@ -218,12 +363,35 @@ function TrainingSession() {
               >
                 休息
               </button>
-              <button 
-                className="btn btn-success btn-large"
-                onClick={handleNextSet}
-              >
-                {isLastSet ? (isLastExercise ? '完成訓練' : '下一個動作') : '完成這一組'}
-              </button>
+            </div>
+          </div>
+        ) : period === PERIOD_TYPES.EXERCISE_BREAK ? (
+          <div className="rest-period exercise-break">
+            <div className="rest-info">
+              <h2>項目間休息</h2>
+              <div className="next-exercise-info">
+                {isLastExercise ? (
+                  <span>🎉 所有項目已完成</span>
+                ) : (
+                  <span>下一個項目：{workout.exercises[currentExerciseIndex + 1]?.name}</span>
+                )}
+              </div>
+            </div>
+
+            <div className="timer-display rest-timer">
+              <div className="timer-label">剩餘時間</div>
+              <div className="timer-value">{formatTime(restTime)}</div>
+            </div>
+
+            <div className="action-buttons">
+              {!isLastExercise && (
+                <button 
+                  className="btn btn-primary btn-large"
+                  onClick={handleNextExercise}
+                >
+                  開始下一個項目
+                </button>
+              )}
             </div>
           </div>
         ) : (
@@ -264,6 +432,118 @@ function TrainingSession() {
           </button>
         </div>
       </div>
+
+      {showCompletionDialog && (
+        <div className="dialog-overlay" onClick={() => setShowCompletionDialog(false)}>
+          <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+            <h2>🎉 本次課表已完成</h2>
+            <p>是否結束訓練？</p>
+            <div className="dialog-buttons">
+              <button 
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowCompletionDialog(false)
+                  setShowTempExerciseDialog(true)
+                  setTempExercise({
+                    name: '',
+                    sets: 3,
+                    reps: 10,
+                    restTime: '60秒',
+                    startingWeight: ''
+                  })
+                }}
+              >
+                新增臨時動作
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={handleEndTraining}
+              >
+                結束訓練
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showTempExerciseDialog && (
+        <div className="dialog-overlay">
+          <div className="dialog-content temp-exercise-dialog" onClick={(e) => e.stopPropagation()}>
+            <h2>新增臨時動作</h2>
+            <div className="temp-exercise-form">
+              <div className="form-group">
+                <label>動作名稱</label>
+                <input
+                  type="text"
+                  value={tempExercise.name}
+                  onChange={(e) => setTempExercise({...tempExercise, name: e.target.value})}
+                  className="form-input"
+                  placeholder="例如：伏地挺身"
+                />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>組數</label>
+                  <input
+                    type="number"
+                    value={tempExercise.sets}
+                    onChange={(e) => setTempExercise({...tempExercise, sets: parseInt(e.target.value) || 1})}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>次數</label>
+                  <input
+                    type="number"
+                    value={tempExercise.reps}
+                    onChange={(e) => setTempExercise({...tempExercise, reps: parseInt(e.target.value) || 1})}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>重量 ({userSettings.weightUnit})</label>
+                  <input
+                    type="text"
+                    value={tempExercise.startingWeight}
+                    onChange={(e) => setTempExercise({...tempExercise, startingWeight: e.target.value})}
+                    className="form-input"
+                    placeholder="選填"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>休息時間</label>
+                  <input
+                    type="text"
+                    value={tempExercise.restTime}
+                    onChange={(e) => setTempExercise({...tempExercise, restTime: e.target.value})}
+                    className="form-input"
+                    placeholder="例如：60秒"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="dialog-buttons">
+              <button 
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowTempExerciseDialog(false)
+                  setShowCompletionDialog(true)
+                }}
+              >
+                返回
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={handleAddTempExercise}
+              >
+                開始動作
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

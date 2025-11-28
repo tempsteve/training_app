@@ -1,16 +1,25 @@
 .page-title {
   font-size: 2rem;
-  margin-bottom: 25px;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 24px;
+  color: var(--text-main);
+  text-shadow: none; /* 移除陰影以符合乾淨的玻璃風格 */
+  padding-left: 5px;
 }
 
 .workout-card {
-  background: white;
-  border-radius: 15px;
-  padding: 25px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.2s;
+}
+
+.workout-card:active {
+  transform: scale(0.98);
 }
 
 .workout-header {
@@ -23,10 +32,11 @@
 }
 
 .workout-header h2 {
-  font-size: 1.5rem;
-  color: #333;
+  font-size: 1.6rem;
+  color: var(--primary-color);
   flex: 1;
   min-width: 200px;
+  font-weight: 700;
 }
 
 .workout-actions {
@@ -36,14 +46,17 @@
 }
 
 .workout-exercises {
-  padding-top: 15px;
-  border-top: 1px solid #eee;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .workout-exercises h3 {
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-  color: #555;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
 }
 
 .workout-exercises ul {
@@ -52,9 +65,12 @@
 }
 
 .workout-exercises li {
-  padding: 8px 0;
-  color: #666;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 10px 0;
+  color: var(--text-main);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.05rem;
 }
 
 .workout-exercises li:last-child {
@@ -64,15 +80,17 @@
 @media (max-width: 768px) {
   .workout-header {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
   
   .workout-actions {
     width: 100%;
+    margin-top: 10px;
   }
   
   .workout-actions .btn {
     flex: 1;
     min-width: 80px;
+    padding: 12px;
   }
 }

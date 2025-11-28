@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { loadWorkouts, saveWorkouts } from '../utils/storage'
+import { loadWorkouts, saveWorkouts, loadUserSettings } from '../utils/storage'
+import CustomSelect from './CustomSelect'
 import './WorkoutEditor.css'
 
 function WorkoutEditor() {
   const { id } = useParams()
   const navigate = useNavigate()
   const isEditing = !!id
+  const [userSettings, setUserSettings] = useState({ weightUnit: 'kg' })
   
   const [workout, setWorkout] = useState({
     name: '',
@@ -14,6 +16,9 @@ function WorkoutEditor() {
   })
 
   useEffect(() => {
+    const settings = loadUserSettings()
+    setUserSettings(settings)
+
     if (isEditing) {
       const workouts = loadWorkouts()
       const found = workouts.find(w => w.id === id)
@@ -36,7 +41,8 @@ function WorkoutEditor() {
         name: '',
         sets: 3,
         reps: 10,
-        restTime: '30秒'
+        restTime: '30秒',
+        startingWeight: ''
       }]
     })
   }
@@ -86,10 +92,32 @@ function WorkoutEditor() {
     navigate('/workouts')
   }
 
+  const parseRestTimeValue = (restTime) => {
+    if (!restTime) return { value: '', unit: '秒' }
+    
+    // 處理 "30秒", "2分鐘", "1.5分" 等格式
+    // 這裡我們簡化為：如果有 "分" 或 "分鐘" 就是分鐘，否則就是秒
+    // 提取數字部分
+    const valueMatch = restTime.match(/[\d.]+/)
+    const value = valueMatch ? valueMatch[0] : ''
+    
+    let unit = '秒'
+    if (restTime.includes('分')) {
+      unit = '分'
+    }
+    
+    return { value, unit }
+  }
+
   return (
     <div>
       <div className="nav-bar">
-        <Link to="/workouts" className="nav-title">← 返回課表列表</Link>
+        <Link to="/workouts" className="btn-nav">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          返回列表
+        </Link>
       </div>
       <div className="container">
         <div className="card">
@@ -114,7 +142,10 @@ function WorkoutEditor() {
               </button>
             </div>
 
-            {workout.exercises.map((exercise, index) => (
+            {workout.exercises.map((exercise, index) => {
+              const { value: restValue, unit: restUnit } = parseRestTimeValue(exercise.restTime)
+              
+              return (
               <div key={index} className="exercise-item">
                 <div className="exercise-header">
                   <h3>動作 {index + 1}</h3>
@@ -163,18 +194,54 @@ function WorkoutEditor() {
 
                     <div className="form-group">
                       <label>休息時間</label>
-                      <input
-                        type="text"
-                        value={exercise.restTime}
-                        onChange={(e) => updateExercise(index, 'restTime', e.target.value)}
-                        placeholder="例如：30秒、2分鐘、1分30秒"
-                        className="form-input"
-                      />
+                      <div className="input-group">
+                        <input
+                          type="number"
+                          min="0"
+                          step="1"
+                          value={restValue}
+                          onChange={(e) => {
+                            const val = e.target.value
+                            updateExercise(index, 'restTime', val ? `${val}${restUnit}` : `0${restUnit}`)
+                          }}
+                          placeholder="30"
+                          className="form-input"
+                        />
+                        <div className="input-group-append" style={{ width: '90px' }}>
+                          <CustomSelect
+                            value={restUnit}
+                            onChange={(newUnit) => {
+                              updateExercise(index, 'restTime', `${restValue}${newUnit}`)
+                            }}
+                            options={[
+                              { value: '秒', label: '秒' },
+                              { value: '分', label: '分' }
+                            ]}
+                            className="unit-selector"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label>起始重量</label>
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          value={exercise.startingWeight || ''}
+                          onChange={(e) => updateExercise(index, 'startingWeight', e.target.value)}
+                          placeholder="例如：20"
+                          className="form-input"
+                        />
+                        <div className="form-addon-unit">
+                          {userSettings.weightUnit}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
+            )})}
 
             {workout.exercises.length === 0 && (
               <div className="empty-exercises">

@@ -1,24 +1,26 @@
 .summary-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  /* 移除特定背景，使用全域背景 */
+  padding: 20px 20px var(--safe-area-bottom) 20px;
 }
 
 .summary-header {
   text-align: center;
-  color: white;
   margin-bottom: 30px;
 }
 
 .summary-header h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: var(--primary-color);
+  text-shadow: none;
+  font-weight: 800;
 }
 
 .summary-header h2 {
-  font-size: 1.5rem;
-  opacity: 0.9;
+  font-size: 1.4rem;
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
 .summary-content {
@@ -28,51 +30,63 @@
 
 .stats-card,
 .records-card {
-  background: white;
-  border-radius: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--radius-lg);
   padding: 30px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 24px;
+  box-shadow: var(--glass-shadow);
 }
 
 .stats-card h3,
 .records-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: #333;
+  font-size: 1.4rem;
+  margin-bottom: 24px;
+  color: var(--text-main);
   text-align: center;
+  font-weight: 600;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 20px;
 }
 
 .stat-item {
   text-align: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  color: white;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s;
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
 }
 
 .stat-value {
   font-size: 2rem;
-  font-weight: bold;
+  font-weight: 800;
   margin-bottom: 8px;
-  font-family: 'Courier New', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, monospace; /* 改回系統字體看起來更現代 */
+  color: var(--primary-color);
 }
 
 .stat-label {
   font-size: 0.9rem;
-  opacity: 0.9;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .exercise-group {
-  margin-bottom: 25px;
+  margin-bottom: 30px;
   padding-bottom: 25px;
-  border-bottom: 2px solid #eee;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .exercise-group:last-child {
@@ -82,58 +96,71 @@
 }
 
 .exercise-group h4 {
-  font-size: 1.3rem;
-  color: #667eea;
-  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: var(--text-main);
+  margin-bottom: 16px;
+  padding-left: 8px;
+  border-left: 4px solid var(--secondary-color);
 }
 
 .sets-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .set-record {
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   flex-wrap: wrap;
+  transition: background 0.2s;
+}
+
+.set-record:hover {
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .set-number {
-  font-weight: 600;
-  color: #333;
-  min-width: 80px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  min-width: 40px;
+  font-size: 0.9rem;
 }
 
 .set-weight {
-  color: #667eea;
-  font-weight: 600;
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1.1rem;
 }
 
 .set-time {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   margin-left: auto;
+  font-variant-numeric: tabular-nums;
 }
 
 .summary-actions {
   display: flex;
   gap: 15px;
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
 .summary-actions .btn {
   flex: 1;
   padding: 18px;
   font-size: 1.1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   text-decoration: none;
   text-align: center;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @media (max-width: 768px) {
@@ -147,27 +174,25 @@
   
   .stats-card,
   .records-card {
-    padding: 20px;
+    padding: 24px;
   }
   
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
   
   .stat-value {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
   
   .set-record {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .set-time {
-    margin-left: 0;
+    /* 保持單行佈局在小螢幕上通常比較好讀，除非太擠 */
+    justify-content: space-between;
   }
   
   .summary-actions {
     flex-direction: column;
+    gap: 12px;
   }
 }

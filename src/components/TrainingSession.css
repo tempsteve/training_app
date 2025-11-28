@@ -1,177 +1,318 @@
 .training-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 20px;
+  padding: 20px 20px var(--safe-area-bottom) 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .training-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .training-header h1 {
-  font-size: 2rem;
-  margin-bottom: 10px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 1.8rem;
+  color: var(--primary-color);
+  margin-bottom: 5px;
 }
 
 .progress-info {
-  font-size: 1.1rem;
-  opacity: 0.9;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.05);
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
 }
 
 .training-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   max-width: 600px;
+  width: 100%;
   margin: 0 auto;
 }
 
-.exercise-period,
-.rest-period {
-  background: white;
-  border-radius: 20px;
+.exercise-period, .rest-period {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 30px;
   padding: 30px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  color: #333;
+  box-shadow: var(--glass-shadow);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.exercise-info {
-  text-align: center;
-  margin-bottom: 30px;
+.rest-period {
+  background: rgba(255, 255, 255, 0.7); /* 休息時稍微亮一點 */
+}
+
+/* Dark mode 休息時間調整 */
+[data-theme='dark'] .rest-period {
+    background: rgba(50, 50, 50, 0.7);
+}
+
+.exercise-info, .rest-info {
+  margin-bottom: 20px;
 }
 
 .exercise-name {
   font-size: 2rem;
-  color: #667eea;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  color: var(--text-main);
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .set-info {
-  font-size: 1.3rem;
-  color: #666;
-  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
 .reps-info {
-  font-size: 1.1rem;
-  color: #888;
+  color: var(--text-secondary);
+  font-size: 1rem;
 }
 
+/* Timer Display */
 .timer-display {
-  text-align: center;
   margin: 30px 0;
-  padding: 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 15px;
-  color: white;
+  position: relative;
 }
 
 .timer-label {
-  font-size: 1.1rem;
+  font-size: 1rem;
+  color: var(--text-secondary);
   margin-bottom: 10px;
-  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .timer-value {
-  font-size: 3.5rem;
-  font-weight: bold;
-  font-family: 'Courier New', monospace;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  font-family: -apple-system, BlinkMacSystemFont, monospace;
+  background: -webkit-linear-gradient(45deg, var(--primary-color), #20B2AA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.rest-timer {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+.rest-timer .timer-value {
+  background: -webkit-linear-gradient(45deg, var(--secondary-color), #ff9a9e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
+/* Weight Input Section */
 .weight-input-section {
-  margin: 30px 0;
-  text-align: center;
+  background: var(--card-inner-bg); /* 使用變數，適應 Light/Dark */
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-light);
 }
 
 .weight-input-section label {
   display: block;
-  font-size: 1.1rem;
   margin-bottom: 10px;
-  color: #555;
-  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.starting-weight-hint {
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.weight-input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* 增加按鈕間距 */
+}
+
+.weight-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--btn-bg-secondary); /* 使用半透明背景 */
+  border: 1px solid var(--primary-color); /* 加上邊框 */
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  /* 移除原本的深陰影，改用輕微的 */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.weight-btn:hover {
+  background: var(--primary-color);
+  color: white; /* Hover 時反白 */
+}
+
+.weight-btn:active {
+  transform: scale(0.92);
+  background: var(--primary-color);
+  color: white;
 }
 
 .weight-input {
-  width: 100%;
-  max-width: 300px;
-  padding: 15px;
-  font-size: 1.5rem;
+  width: 120px;
   text-align: center;
-  border: 3px solid #667eea;
-  border-radius: 12px;
-  font-weight: bold;
+  font-size: 2rem; /* 加大字體 */
+  padding: 5px;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid var(--primary-color);
+  color: var(--text-main);
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, monospace;
 }
 
-.rest-info {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.rest-info h2 {
-  font-size: 2rem;
-  color: #f5576c;
-  margin-bottom: 15px;
-}
-
-.next-exercise-info {
-  font-size: 1.2rem;
-  color: #666;
-}
-
+/* Buttons */
 .action-buttons {
-  display: flex;
-  gap: 15px;
-  margin-top: 30px;
+  margin-top: auto;
 }
 
 .action-buttons .btn {
-  flex: 1;
+  width: 100%;
   padding: 20px;
   font-size: 1.2rem;
-  border-radius: 12px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 196, 179, 0.3);
 }
 
 .end-training-section {
-  text-align: center;
   margin-top: 20px;
+  text-align: center;
 }
 
 .end-training-section .btn {
-  width: 100%;
-  max-width: 400px;
-  padding: 15px;
-  font-size: 1.1rem;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: none;
 }
 
+/* Dialog Overlay */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dialog-content {
+  background: var(--dialog-bg); /* 使用專用變數 */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 30px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.dialog-content h2 {
+  margin-bottom: 15px;
+  color: var(--text-main);
+}
+
+.dialog-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.dialog-buttons .btn {
+  width: 100%;
+}
+
+/* Temp Exercise Dialog Styles */
+.temp-exercise-dialog {
+  max-width: 500px;
+  text-align: left;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  box-shadow: var(--glass-shadow);
+}
+
+.temp-exercise-dialog h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: var(--text-main);
+  font-size: 1.5rem;
+}
+
+.temp-exercise-form {
+  margin-bottom: 30px;
+}
+
+.temp-exercise-form .form-group {
+  margin-bottom: 20px;
+}
+
+.temp-exercise-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* 確保彈窗在手機上不會太擠 */
 @media (max-width: 768px) {
-  .training-container {
-    padding: 15px;
+  .temp-exercise-dialog {
+    padding: 24px;
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .temp-exercise-form .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
   
-  .exercise-period,
-  .rest-period {
-    padding: 20px;
+  .timer-value {
+    font-size: 4rem;
   }
   
   .exercise-name {
     font-size: 1.5rem;
   }
   
-  .timer-value {
-    font-size: 2.5rem;
-  }
-  
-  .action-buttons {
-    flex-direction: column;
-  }
-  
-  .weight-input {
-    max-width: 100%;
+  .exercise-period, .rest-period {
+    padding: 20px;
   }
 }

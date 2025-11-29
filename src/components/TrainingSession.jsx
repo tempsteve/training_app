@@ -40,6 +40,7 @@ function TrainingSession() {
   const currentSetRef = useRef(1)
   const currentExerciseIndexRef = useRef(0)
   const workoutRef = useRef(null)
+  const originalStartingWeightsRef = useRef({}) // 保存訓練開始時每個動作的原始起始重量
 
   useEffect(() => {
     const settings = loadUserSettings()
@@ -54,9 +55,17 @@ function TrainingSession() {
     setWorkout(found)
     workoutRef.current = found
     startTimeRef.current = Date.now()
+    // 保存每個動作的原始起始重量（訓練開始時的值）
+    const originalWeights = {}
+    found.exercises.forEach((exercise, index) => {
+      originalWeights[index] = exercise.startingWeight || ''
+    })
+    originalStartingWeightsRef.current = originalWeights
     // 初始化第一個動作的起始重量
-    if (found.exercises.length > 0 && found.exercises[0].startingWeight) {
-      setCurrentWeight(found.exercises[0].startingWeight)
+    if (found.exercises.length > 0) {
+      if (found.exercises[0].startingWeight) {
+        setCurrentWeight(found.exercises[0].startingWeight)
+      }
     }
     startExerciseTimer()
   }, [id, navigate])
@@ -139,6 +148,7 @@ function TrainingSession() {
     // 記錄當前組的數據
     const record = {
       exerciseName: currentExercise.name,
+      targetReps: currentExercise.reps, // 記錄目標次數
       set: currentSet,
       weight: currentWeight || null,
       unit: unit,
@@ -267,6 +277,8 @@ function TrainingSession() {
     // 直接更新索引和重置狀態即可
     
     const nextIndex = workout.exercises.length // 原本長度即為新動作索引
+    // 保存臨時動作的原始起始重量
+    originalStartingWeightsRef.current[nextIndex] = newExercise.startingWeight || ''
     setCurrentExerciseIndex(nextIndex)
     setCurrentSet(1)
     setExerciseTime(0)
@@ -322,9 +334,9 @@ function TrainingSession() {
 
             <div className="weight-input-section">
               <label>本次重量/強度 ({unit})</label>
-              {currentExercise.startingWeight && (
+              {originalStartingWeightsRef.current[currentExerciseIndex] && (
                 <div className="starting-weight-hint">
-                  課表起始重量：{currentExercise.startingWeight} {unit}
+                  課表起始重量：{originalStartingWeightsRef.current[currentExerciseIndex]} {unit}
                 </div>
               )}
               <div className="weight-input-wrapper">

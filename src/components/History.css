@@ -1,0 +1,206 @@
+.history-container {
+  padding: 20px 20px var(--safe-area-bottom) 20px;
+}
+
+.history-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.history-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.2s;
+}
+
+.history-card:active {
+  transform: scale(0.99);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 16px;
+  gap: 12px;
+}
+
+.history-title-group {
+  flex: 1;
+}
+
+.history-date {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.history-name {
+  font-size: 1.4rem;
+  color: var(--primary-color);
+  font-weight: 700;
+  margin: 0;
+}
+
+.history-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.history-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-stat-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.history-stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-details {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.history-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.history-toggle-btn:hover {
+  text-decoration: underline;
+}
+
+.history-records-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-exercise-group h4 {
+  font-size: 1rem;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.history-sets {
+  padding-left: 12px;
+  border-left: 2px solid var(--secondary-color);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.history-set-tag {
+  background: var(--btn-bg-secondary);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
+  display: inline-flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+}
+
+.set-weight-text {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.set-reps-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.empty-history {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg);
+  border: var(--glass-border);
+}
+
+.empty-history-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.history-delete-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.history-delete-btn:hover {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.history-delete-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+.btn-small {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+

@@ -4,6 +4,7 @@ import WorkoutList from './components/WorkoutList'
 import WorkoutEditor from './components/WorkoutEditor'
 import TrainingSession from './components/TrainingSession'
 import TrainingSummary from './components/TrainingSummary'
+import History from './components/History'
 import Settings from './components/Settings'
 import { loadUserSettings } from './utils/storage'
 import './App.css'
@@ -74,6 +75,7 @@ function App() {
           <Route path="/workouts/edit/:id" element={<WorkoutEditor />} />
           <Route path="/train/:id" element={<TrainingSession />} />
           <Route path="/summary" element={<TrainingSummary />} />
+          <Route path="/history" element={<History />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </div>
@@ -99,9 +101,9 @@ function Home() {
           </button>
           <button 
             className="btn btn-secondary btn-large"
-            onClick={() => navigate('/workouts/new')}
+            onClick={() => navigate('/history')}
           >
-            建立新課表
+            訓練紀錄
           </button>
           <button 
             className="btn btn-outline btn-large"

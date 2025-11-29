@@ -34,6 +34,18 @@ export const addTrainingRecord = (record) => {
   return history
 }
 
+export const deleteTrainingRecord = (id) => {
+  const history = loadTrainingHistory()
+  const filtered = history.filter(record => record.id !== id)
+  saveTrainingHistory(filtered)
+  return filtered
+}
+
+export const clearTrainingHistory = () => {
+  saveTrainingHistory([])
+  return []
+}
+
 export const saveUserSettings = (settings) => {
   localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(settings))
 }

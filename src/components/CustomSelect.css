@@ -133,11 +133,11 @@
   background: transparent;
 }
 .custom-select-options::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--border-light);
   border-radius: 3px;
 }
 .custom-select-options::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--text-secondary);
 }
 
 /* Mobile Touch Optimization */

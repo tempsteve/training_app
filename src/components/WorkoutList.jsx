@@ -29,7 +29,7 @@ function WorkoutList() {
             </svg>
             返回首頁
           </Link>
-          <button className="btn btn-primary" onClick={() => navigate('/workouts/new')}>
+          <button className="btn-nav-primary" onClick={() => navigate('/workouts/new')}>
             + 建立課表
           </button>
         </div>

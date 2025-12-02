@@ -84,6 +84,10 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent; /* 移除手機點擊高亮 */
+  user-select: none; /* 禁止選取文字 */
+  -webkit-user-select: none; /* Safari 支援 */
+  -moz-user-select: none; /* Firefox 支援 */
+  -ms-user-select: none; /* IE/Edge 支援 */
 }
 
 body {
@@ -126,6 +130,10 @@ input, textarea, select {
   font-family: inherit;
   outline: none;
   appearance: none; /* 移除原生樣式 */
+  user-select: text; /* 允許輸入框選取文字 */
+  -webkit-user-select: text; /* Safari 支援 */
+  -moz-user-select: text; /* Firefox 支援 */
+  -ms-user-select: text; /* IE/Edge 支援 */
 }
 
 /* 滾動條美化 */

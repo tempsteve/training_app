@@ -32,8 +32,15 @@
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+}
+
+/* 小螢幕時單欄排列 */
+@media (max-width: 479px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Fix for dropdown overlapping subsequent inputs - decreasing z-index */
@@ -128,6 +135,7 @@
   position: relative; /* 為了 z-index */
   z-index: 10;
   align-items: stretch; /* 確保高度一致 */
+  min-width: 0; /* 允許 flex 項目縮小 */
 }
 
 .input-group .form-input {
@@ -136,6 +144,7 @@
   background: transparent;
   flex: 1;
   text-align: center; /* 讓數字居中 */
+  min-width: 0; /* 允許輸入框縮小 */
   /* Remove number arrows (spinner) */
   -moz-appearance: textfield;
 }
@@ -147,6 +156,9 @@
 
 .input-group-append {
   display: flex;
+  flex-shrink: 0; /* 防止單位選擇器被壓縮 */
+  min-width: 80px; /* 確保單位選擇器有最小寬度 */
+  max-width: 100px; /* 限制最大寬度 */
 }
 
 /* Control Buttons (+/-) */
@@ -206,17 +218,25 @@
 
 
 /* 自定義選擇器在 Input Group 中的適配 */
+@media (max-width: 479px) {
+  .input-group-append {
+    min-width: 70px; /* 小螢幕時稍微縮小 */
+    max-width: 85px;
+  }
+}
+
 .unit-selector .custom-select-trigger {
   background: var(--glass-bg); /* 使用變數，或者比 input 稍微亮一點/暗一點 */
   border: none;
   border-radius: 0;
   border-left: 1px solid var(--border-light); /* 使用變數 */
-  padding: 0 16px; /* Reduced padding since height is managed by flex */
+  padding: 0 12px; /* 稍微減少 padding 以適應窄螢幕 */
   height: 100%; /* 確保填滿 */
   box-shadow: none;
   color: var(--text-input);
   display: flex;
   align-items: center;
+  width: 100%; /* 填滿父容器 */
 }
 .unit-selector .custom-select-trigger:first-child {
   border-left: 1px solid var(--border-light);
@@ -256,19 +276,30 @@
   color: var(--text-secondary);
   font-weight: 500;
   min-width: 60px;
+  flex-shrink: 0; /* 防止單位標籤被壓縮 */
   border-top-right-radius: var(--radius-md);
   border-bottom-right-radius: var(--radius-md);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 479px) {
   .form-row {
     grid-template-columns: 1fr;
     gap: 15px;
   }
   
   .section-header {
-    flex-direction: row; /* 保持標題和按鈕並排 */
-    align-items: center;
+    flex-direction: column; /* 小螢幕時垂直排列 */
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .section-header > div {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .section-header > div .btn {
+    flex: 1;
   }
   
   .form-actions {
@@ -281,10 +312,84 @@
   }
   
   .input-group {
-     flex-wrap: nowrap; /* 保持同一行 */
+    flex-wrap: nowrap; /* 保持同一行 */
   }
   
   .input-group .form-input {
-      min-width: 0; /* Allow shrinking */
+    min-width: 0; /* Allow shrinking */
+    font-size: 0.95rem; /* 稍微縮小字體以適應窄螢幕 */
+  }
+  
+  .btn-control {
+    width: 40px; /* 小螢幕時稍微縮小按鈕 */
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 768px) {
+  .section-header {
+    flex-direction: row; /* 中等螢幕時保持水平排列 */
+    align-items: center;
+  }
+  
+  .section-header > div {
+    display: flex;
+    gap: 12px;
+  }
+}
+
+/* Dialog Styles */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dialog-content {
+  background: var(--dialog-bg, var(--card-bg));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 30px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  text-align: left;
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.dialog-content h2 {
+  margin-bottom: 15px;
+  color: var(--text-main);
+  text-align: center;
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+  justify-content: flex-end;
+}
+
+.dialog-buttons .btn {
+  flex: 1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

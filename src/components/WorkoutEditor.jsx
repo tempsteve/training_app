@@ -14,6 +14,8 @@ function WorkoutEditor() {
     name: '',
     exercises: []
   })
+  const [showImportDialog, setShowImportDialog] = useState(false)
+  const [importText, setImportText] = useState('')
 
   useEffect(() => {
     const settings = loadUserSettings()
@@ -165,6 +167,136 @@ function WorkoutEditor() {
     updateExercise(index, 'restTime', `${newVal}${unit}`)
   }
 
+  // 解析 CSV 格式的文字並轉換成動作資料
+  const parseImportText = (text) => {
+    const lines = text.trim().split('\n').filter(line => line.trim())
+    if (lines.length === 0) return []
+
+    // 跳過標題行（如果第一行包含「運動項目」等關鍵字）
+    const headerKeywords = ['運動項目', '目標', '組數', '次數', '休息', '備註']
+    const isHeader = (line) => headerKeywords.some(keyword => line.includes(keyword))
+    
+    let startIndex = 0
+    if (isHeader(lines[0])) {
+      startIndex = 1
+    }
+
+    const exercises = []
+    
+    for (let i = startIndex; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (!line) continue
+
+      // 解析 CSV 行（處理逗號分隔）
+      const parts = line.split(',').map(p => p.trim())
+      
+      if (parts.length < 3) continue // 至少需要動作名稱、組數次數、休息時間
+
+      const exerciseName = parts[0] || ''
+      // parts[1] 是目標，我們暫時不用
+      const setsReps = parts[2] || '' // 例如：4 組×4∼6 次
+      const restTime = parts[3] || '' // 例如：90∼120 秒
+      // parts[4] 是備註，我們暫時不用
+
+      // 解析組數和次數
+      let sets = 3
+      let reps = 10
+      
+      // 處理格式：4 組×4∼6 次 或 4組×8次 或 4組 x 8次 等
+      // 支援多種分隔符號：×、x、X、* 等
+      const setsRepsMatch = setsReps.match(/(\d+)\s*組\s*[×xX*]\s*(\d+)(?:[∼~～-](\d+))?\s*次/)
+      if (setsRepsMatch) {
+        sets = parseInt(setsRepsMatch[1]) || 3
+        // 如果有範圍（如 4∼6），取平均值
+        if (setsRepsMatch[3]) {
+          const min = parseInt(setsRepsMatch[2]) || 10
+          const max = parseInt(setsRepsMatch[3]) || 10
+          reps = Math.floor((min + max) / 2) // 取平均值
+        } else {
+          reps = parseInt(setsRepsMatch[2]) || 10
+        }
+      } else {
+        // 嘗試更寬鬆的格式：只找數字
+        const numbers = setsReps.match(/\d+/g)
+        if (numbers && numbers.length >= 2) {
+          sets = parseInt(numbers[0]) || 3
+          reps = parseInt(numbers[1]) || 10
+        }
+      }
+
+      // 解析休息時間
+      let restTimeStr = '30秒'
+      if (restTime) {
+        // 處理格式：90∼120 秒 或 90-120秒 或 90秒 或 1.5分 等
+        // 支援範圍值（取平均值）和單一值
+        const restMatch = restTime.match(/(\d+(?:\.\d+)?)(?:[∼~～-](\d+(?:\.\d+)?))?\s*(秒|分|分鐘)/)
+        if (restMatch) {
+          const unit = restMatch[3] === '分鐘' ? '分' : restMatch[3]
+          if (restMatch[2]) {
+            // 有範圍，取平均值
+            const min = parseFloat(restMatch[1]) || 30
+            const max = parseFloat(restMatch[2]) || 30
+            const avg = Math.floor((min + max) / 2)
+            restTimeStr = `${avg}${unit}`
+          } else {
+            // 單一值
+            const value = parseFloat(restMatch[1]) || 30
+            // 如果是小數，保持小數；否則轉為整數
+            restTimeStr = value % 1 === 0 ? `${Math.floor(value)}${unit}` : `${value}${unit}`
+          }
+        } else {
+          // 嘗試直接解析數字+單位
+          const simpleMatch = restTime.match(/(\d+(?:\.\d+)?)\s*(秒|分|分鐘)/)
+          if (simpleMatch) {
+            const unit = simpleMatch[2] === '分鐘' ? '分' : simpleMatch[2]
+            const value = parseFloat(simpleMatch[1]) || 30
+            restTimeStr = value % 1 === 0 ? `${Math.floor(value)}${unit}` : `${value}${unit}`
+          } else {
+            // 如果只有數字，假設是秒
+            const numMatch = restTime.match(/(\d+)/)
+            if (numMatch) {
+              restTimeStr = `${numMatch[1]}秒`
+            }
+          }
+        }
+      }
+
+      exercises.push({
+        name: exerciseName,
+        sets: sets,
+        reps: reps,
+        restTime: restTimeStr,
+        startingWeight: ''
+      })
+    }
+
+    return exercises
+  }
+
+  const handleImport = () => {
+    if (!importText.trim()) {
+      alert('請貼上要匯入的資料')
+      return
+    }
+
+    const importedExercises = parseImportText(importText)
+    
+    if (importedExercises.length === 0) {
+      alert('無法解析貼上的資料，請確認格式是否正確')
+      return
+    }
+
+    // 將匯入的動作加入到現有動作列表
+    setWorkout({
+      ...workout,
+      exercises: [...workout.exercises, ...importedExercises]
+    })
+
+    setShowImportDialog(false)
+    setImportText('')
+    alert(`成功匯入 ${importedExercises.length} 個動作`)
+  }
+
   return (
     <div>
       <div className="nav-bar">
@@ -172,7 +304,7 @@ function WorkoutEditor() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
-          返回列表
+          返回
         </Link>
       </div>
       <div className="container">
@@ -193,9 +325,17 @@ function WorkoutEditor() {
           <div className="exercises-section">
             <div className="section-header">
               <h2>動作列表</h2>
-              <button className="btn btn-primary" onClick={addExercise}>
-                + 添加動作
-              </button>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => setShowImportDialog(true)}
+                >
+                  📋 貼上匯入
+                </button>
+                <button className="btn btn-primary" onClick={addExercise}>
+                  + 添加動作
+                </button>
+              </div>
             </div>
 
             {workout.exercises.map((exercise, index) => {
@@ -353,6 +493,51 @@ function WorkoutEditor() {
           </div>
         </div>
       </div>
+
+      {showImportDialog && (
+        <div className="dialog-overlay" onClick={() => setShowImportDialog(false)}>
+          <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+            <h2>貼上匯入課表</h2>
+            <p style={{ marginBottom: '16px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              請貼上 CSV 格式的課表資料，系統會自動解析動作名稱、組數、次數和休息時間。
+            </p>
+            <div className="form-group">
+              <label>貼上資料</label>
+              <textarea
+                value={importText}
+                onChange={(e) => setImportText(e.target.value)}
+                placeholder={`運動項目,目標,組數 × 次數,組間休息時間,備註
+槓鈴臥推,力量與肌肉維持,4 組×4∼6 次,90∼120 秒,優先執行
+上斜啞鈴臥推,胸部上緣,3 組×8 次,90 秒,-`}
+                className="form-input"
+                style={{ 
+                  minHeight: '200px', 
+                  fontFamily: 'monospace',
+                  fontSize: '0.9rem',
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+            <div className="dialog-buttons">
+              <button 
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowImportDialog(false)
+                  setImportText('')
+                }}
+              >
+                取消
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={handleImport}
+              >
+                匯入
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
